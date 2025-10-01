@@ -5,6 +5,7 @@ require('dotenv').config();
 const POSTMAN_API_KEY = process.env.POSTMAN_API_KEY;
 const WORKSPACE_ID = process.env.POSTMAN_WORKSPACE_ID;
 const SYNC_FROM = process.env.SYNC_FROM;
+const JWT_AUTH_KEY = process.env.JWT_AUTH_KEY; 
 
 if (!POSTMAN_API_KEY || !WORKSPACE_ID) {
     console.error('Please set POSTMAN_API_KEY and WORKSPACE_ID in your environment variables.');
@@ -42,13 +43,13 @@ async function main() {
                     console.error('Could not convert open api spec to postman collection', conversionResult.reason);
                 }
                 else {
-                    console.log(`Collection converted - ${collection.info.name}`, conversionResult.output[0].data);
+                    const collection = conversionResult.output[0].data;
+                    console.log(`Collection converted - ${collection.info.name}`);
                     const existing = data.collections.find(c => c.name === collection.info.name);
 
                     if (existing != null) {
                         console.log(`Existing postman collection for "${collection.info.name}" will be replaced`);
 
-                        //console.log("EXISTING: " + existing.id);
                         try {
                             await axios.delete(`${baseUrl}/collections/${existing.id}`, {
                                 headers: {
@@ -66,7 +67,7 @@ async function main() {
                             bearer: [
                                 {
                                     key: "token",
-                                    value: "{{clerkSessionJwt}}",
+                                    value: `{{${JWT_AUTH_KEY}}}`,
                                     type: "string"
                                 }
                             ]
