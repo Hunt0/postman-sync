@@ -21,8 +21,6 @@ async function main() {
         }
     });
 
-    console.log(data.collections);
-
     const toSync = SYNC_FROM.split(',').map(item => item.trim());
     const specs = [];
 
